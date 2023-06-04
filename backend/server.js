@@ -1,6 +1,8 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const { createServer } = require('http');
+const { execute, subscribe } = require('graphql');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
 const Redis = require('ioredis');
 const typeDefs = require('./graphschema');
 const resolvers = require('./resolvers');
@@ -19,21 +21,31 @@ const server = new ApolloServer({
       redis,
     };
   },
-  subscriptions: {
-    path: '/subscriptions', // Set the path for subscriptions
-    onConnect: () => {
-      console.log('Client connected to subscriptions');
-    },
-    onDisconnect: () => {
-      console.log('Client disconnected from subscriptions');
-    },
-  },
 });
 
-server.applyMiddleware({ app });
-server.installSubscriptionHandlers(httpServer);
+async function startServer() {
+  await server.start();
 
-httpServer.listen({ port: 4000 }, () => {
-  console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
-  console.log(`Subscriptions ready at ws://localhost:4000${server.subscriptionsPath}`);
+  server.applyMiddleware({ app });
+
+  SubscriptionServer.create(
+    {
+      schema: server.schema,
+      execute,
+      subscribe,
+    },
+    {
+      server: httpServer,
+      path: '/subscriptions',
+    }
+  );
+
+  httpServer.listen({ port: 4000 }, () => {
+    console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
+    console.log(`Subscriptions ready at ws://localhost:4000/subscriptions`);
+  });
+}
+
+startServer().catch((err) => {
+  console.error('Error starting server:', err);
 });
