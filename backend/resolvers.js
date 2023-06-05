@@ -47,6 +47,7 @@ const resolvers = {
           change: stockData.change,
           volume: stockData.volume,
         };
+        
 
         return stock;
       } catch (error) {

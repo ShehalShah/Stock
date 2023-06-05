@@ -3,9 +3,21 @@ const { gql } = require('apollo-server-express');
 const typeDefs = gql`
   type Stock {
     symbol: String!
-    price: Float!
+    identifier: String!
+    open: Float!
+    dayHigh: Float!
+    dayLow: Float!
+    lastPrice: Float!
+    previousClose: Float!
     change: Float!
-    volume: Float!
+    pChange: Float!
+    yearHigh: Float!
+    yearLow: Float!
+    totalTradedVolume: Float!
+    totalTradedValue: Float!
+    lastUpdateTime: String!
+    perChange365d: Float!
+    perChange30d: Float!
   }
 
   type Query {
