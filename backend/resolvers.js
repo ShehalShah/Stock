@@ -1,60 +1,91 @@
 const axios = require('axios');
-const WebSocket = require('ws');
 
-const wss = new WebSocket.Server({ port: 8080 }); // Create WebSocket server
-
-wss.on('connection', (ws) => {
-  ws.on('message', (message) => {
-    // Handle subscription request from the client
-    const { symbol } = JSON.parse(message);
-
-    // Subscribe to the stock updates for the specified symbol
-    // For example, you can use a third-party library or API to subscribe to stock updates
-
-    // When a stock update is received, send it to the client
-    const stockUpdateHandler = (update) => {
-      const stockUpdate = {
-        symbol: update.symbol,
-        price: update.price,
-        change: update.change,
-        volume: update.volume,
-      };
-      ws.send(JSON.stringify(stockUpdate));
-    };
-
-    // Add the stock update handler to the subscription mechanism
-    // For example, with a third-party library, you may need to specify the callback function
-
-    ws.on('close', () => {
-      // Clean up any resources when the client disconnects
-      // For example, unsubscribe from stock updates for the specified symbol
-    });
-  });
-});
+const API_KEY = '48334e4faemsh146b66580f9c961p13d654jsnfb3484c3b23a';
 
 const resolvers = {
   Query: {
     getStock: async (_, { symbol }) => {
       try {
-        // Make API request to fetch stock data
-        const response = await axios.get(`https://api.example.com/stocks/${symbol}`);
+        const options = {
+          method: 'GET',
+          url: 'https://latest-stock-price.p.rapidapi.com/any',
+          headers: {
+            'X-RapidAPI-Key': API_KEY,
+            'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com',
+          },
+          params: {
+            identifier: symbol,
+          },
+        };
+
+        const response = await axios.request(options);
         const stockData = response.data;
 
-        // Transform the API response to match the schema structure
         const stock = {
           symbol: stockData.symbol,
-          price: stockData.price,
+          identifier: stockData.identifier,
+          open: stockData.open,
+          dayHigh: stockData.dayHigh,
+          dayLow: stockData.dayLow,
+          lastPrice: stockData.lastPrice,
+          previousClose: stockData.previousClose,
           change: stockData.change,
-          volume: stockData.volume,
+          pChange: stockData.pChange,
+          yearHigh: stockData.yearHigh,
+          yearLow: stockData.yearLow,
+          totalTradedVolume: stockData.totalTradedVolume,
+          totalTradedValue: stockData.totalTradedValue,
+          lastUpdateTime: stockData.lastUpdateTime,
+          perChange365d: stockData.perChange365d,
+          perChange30d: stockData.perChange30d,
         };
-        
 
         return stock;
       } catch (error) {
         throw new Error('Failed to fetch stock data');
       }
     },
-    // Implement other resolver functions for fetching stock data as needed
+    getAllStocks: async () => {
+      try {
+        const options = {
+          method: 'GET',
+          url: 'https://latest-stock-price.p.rapidapi.com/price',
+          headers: {
+            'X-RapidAPI-Key': API_KEY,
+            'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com',
+          },
+          params: {
+            Indices: 'NIFTY 50', // Replace with the desired indices
+          },
+        };
+
+        const response = await axios.request(options);
+        const stocksData = response.data;
+
+        const stocks = stocksData.map((stockData) => ({
+          symbol: stockData.symbol,
+          identifier: stockData.identifier,
+          open: stockData.open,
+          dayHigh: stockData.dayHigh,
+          dayLow: stockData.dayLow,
+          lastPrice: stockData.lastPrice,
+          previousClose: stockData.previousClose,
+          change: stockData.change,
+          pChange: stockData.pChange,
+          yearHigh: stockData.yearHigh,
+          yearLow: stockData.yearLow,
+          totalTradedVolume: stockData.totalTradedVolume,
+          totalTradedValue: stockData.totalTradedValue,
+          lastUpdateTime: stockData.lastUpdateTime,
+          perChange365d: stockData.perChange365d,
+          perChange30d: stockData.perChange30d,
+        }));
+
+        return stocks;
+      } catch (error) {
+        throw new Error('Failed to fetch stock data');
+      }
+    },
   },
   Subscription: {
     stockUpdate: () => {
