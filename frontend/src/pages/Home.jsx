@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_ALL_STOCKS } from '../graphql/queries';
+import { GET_ALL_STOCKS } from '../queries';
 import StockList from '../components/StockList';
 
 function HomePage() {

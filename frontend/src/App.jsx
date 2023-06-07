@@ -1,17 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Stock from './pages/Stock';
-import Portfolio from './pages/Portfolio';
+// import Portfolio from './pages/Portfolio';
 
 function App() {
   return (
     <Router>
-      <Switch>
-        <Route exact path="/" component={Home} />
-        {/* <Route path="/stock/:symbol" component={Stock} />
-        <Route path="/portfolio" component={Portfolio} /> */}
-      </Switch>
+      <Routes>
+      <Route element={<Home />} exact path="/" />
+      <Route element={<Stock />} exact path="/stock" />
+      {/* <Route element={<Portfolio />} exact path="/portfolio" /> */}
+      </Routes>
     </Router>
   );
 }
