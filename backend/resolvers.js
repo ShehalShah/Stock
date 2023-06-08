@@ -1,10 +1,20 @@
 const axios = require('axios');
+const { RedisPubSub } = require('graphql-redis-subscriptions');
+const { Redis } = require('ioredis');
 
 const API_KEY = '48334e4faemsh146b66580f9c961p13d654jsnfb3484c3b23a';
 
+const publisher = new Redis();
+const subscriber = new Redis();
+
+const pubsub = new RedisPubSub({
+  publisher: publisher,
+  subscriber: subscriber,
+});
+
 const resolvers = {
   Query: {
-    getStock: async (_, { symbol }) => {
+    getStock: async (_, { symbol }, { redis }) => {
       try {
         const options = {
           method: 'GET',
@@ -16,7 +26,6 @@ const resolvers = {
             'X-RapidAPI-Key': API_KEY,
             'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com',
           },
-          
         };
 
         const response = await axios.request(options);
@@ -39,14 +48,18 @@ const resolvers = {
           perChange365d: stockData[0].perChange365d,
           perChange30d: stockData[0].perChange30d,
         };
-        
-
+        // Publish the stock update to the stockUpdates channel
+        try {
+          const result = await pubsub.publish('stockUpdates', JSON.stringify(stock));
+        } catch (error) {
+          console.error('Failed to publish stock update:', error);
+        }
         return stock;
       } catch (error) {
         throw new Error('Failed to fetch stock data');
       }
     },
-    getAllStocks: async () => {
+    getAllStocks: async (_, __, { redis }) => {
       try {
         const options = {
           method: 'GET',
@@ -82,6 +95,13 @@ const resolvers = {
           perChange30d: stockData.perChange30d,
         }));
 
+        // Publish the stock updates to the stockUpdates channel
+        await Promise.all(
+          stocks.map(async (stock) => {
+            await pubsub.publish('stockUpdates', JSON.stringify(stock));
+          })
+        );
+
         return stocks;
       } catch (error) {
         throw new Error('Failed to fetch stock data');
@@ -89,19 +109,15 @@ const resolvers = {
     },
   },
   Subscription: {
-    stockUpdate: () => {
-      // Subscription resolvers are resolved via the WebSocket connection
-      // Return an AsyncIterator to listen for stock updates
-      return {
-        async *[Symbol.asyncIterator]() {
-          // This code will not be executed directly
-          // Instead, it's used by the Apollo Server to handle subscriptions
-
-          // You can leave this empty or perform any necessary setup before starting the iterator
-        },
-      };
+    stockUpdate: {
+      subscribe: (_, { symbol }, { pubsub }) => {
+        console.log("Subscribing to stock updates");
+  
+        return pubsub.asyncIterator('stockUpdates');
+      },
     },
   },
+  
 };
 
 module.exports = resolvers;

@@ -76,9 +76,9 @@ const Stock = () => {
 
     return (
       <div className="flex flex-col items-center space-y-4 bg-gray-900 min-h-screen py-8">
-        <div className='flex'>
+        <div className='flex' >
         <h1 className="text-xl text-white text-center">Stock Price for {stock.symbol}</h1>
-        <Button className='mx-5' variant="contained" onClick={handleOpen}>
+        <Button className='mx-5' variant="contained" onClick={handleOpen} style={{marginLeft:"50px"}}>
             Show Details
           </Button>
           </div >
