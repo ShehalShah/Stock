@@ -27,18 +27,18 @@ const Stock = () => {
 
     // Prepare chart data
     const chartData = {
-      labels: ['Open', 'Day High', 'Day Low', 'Last Price', 'Previous Close', 'Year High', 'Year Low'],
+      labels: ['Year Low','Open',  'Day Low','Day High', 'Last Price', 'Previous Close', 'Year High'],
       datasets: [
         {
           label: 'Stock Attribute',
           data: [
+            stock.yearLow,
             stock.open,
-            stock.dayHigh,
             stock.dayLow,
+            stock.dayHigh,
             stock.lastPrice,
             stock.previousClose,
             stock.yearHigh,
-            stock.yearLow,
           ],
           backgroundColor: 'rgba(15, 185, 177, 0.2)', // Fluorescent Green background color
           borderColor: 'rgba(100, 250, 200, 1)', 

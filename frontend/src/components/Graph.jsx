@@ -21,21 +21,23 @@ const Graph = ({id}) => {
   } else {
     const stock = data.getStock;
 
-    // Prepare chart data
+    const backgroundColor = stock.pChange < 0 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(15, 185, 177, 0.2)';
+    const borderColor = stock.pChange < 0 ? 'rgba(255, 0, 0, 0.4)' : 'rgba(100, 250, 200, 1)';
+    const above = stock.pChange < 0 ? 'rgba(255, 0, 0, 0.1)' : 'rgba(15, 185, 177, 0.2)';
     const chartData = {
-      labels: [ 'Previous Close','Last Price','Open'],
+      labels: ['Open', 'Previous Close','Last Price'],
       datasets: [
         {
           data: [
+            stock.open,
             stock.previousClose,
             stock.lastPrice,
-            stock.open,
           ],
-          backgroundColor: 'rgba(15, 185, 177, 0.2)', // Fluorescent Green background color
-          borderColor: 'rgba(100, 250, 200, 1)', 
+          backgroundColor, 
+          borderColor, 
           fill: {
-            target: 'origin', // Set the fill options
-            above: 'rgba(15, 185, 177, 0.2)',
+            target: 'origin',
+            above,
           },
         },
       ],

@@ -24,18 +24,6 @@ const schema = makeExecutableSchema({
 
 const server = new ApolloServer({
   schema,
-  plugins: [
-    // Proper shutdown for the WebSocket server.
-    {
-      async serverWillStart() {
-        return {
-          async drainServer() {
-            await serverCleanup.dispose();
-          },
-        };
-      },
-    },
-  ],
   context: () => {
     // Make the Redis client available in the context of resolvers
     return {

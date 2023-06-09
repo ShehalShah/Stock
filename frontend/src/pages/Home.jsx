@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useQuery, useApolloClient } from '@apollo/client';
+import { useQuery, useApolloClient, useSubscription } from '@apollo/client';
 import { GET_ALL_STOCKS, STOCK_UPDATE_SUBSCRIPTION } from '../queries';
 import StockList from '../components/StockList';
 import { Link } from 'react-router-dom';
@@ -10,16 +10,15 @@ function HomePage() {
   const symbol = "hello";
   const client = useApolloClient();
 
-  useEffect(() => {
-    const subscription = client.subscribe({
-      query: STOCK_UPDATE_SUBSCRIPTION,
-      variables: { symbol },
-    }).subscribe({
-      next: (stockUpdateData) => {
-        console.log("stock updated");
-        const updatedStock = stockUpdateData.data.stockUpdate;
+  // Subscribe to stock updates using useSubscription
+  const { data: stockUpdateData } = useSubscription(STOCK_UPDATE_SUBSCRIPTION, {
+    variables: { symbol },
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log("stock updated");
+      const updatedStock = subscriptionData.data.stockUpdate;
+      if (updatedStock !== null) {
+        console.log('Received stock update:', updatedStock);
 
-        // Update the stocks data in the cache
         const updatedStocks = data.getAllStocks.map((stock) => {
           if (stock.symbol === updatedStock.symbol) {
             return updatedStock;
@@ -27,23 +26,18 @@ function HomePage() {
           return stock;
         });
 
-        // Write the updated stocks data back to the cache
         client.writeQuery({
           query: GET_ALL_STOCKS,
           data: {
             getAllStocks: updatedStocks,
           },
         });
-      },
-      error: (err) => {
-        console.error('frontend subscribe error home.js', err);
-      },
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [client, data, symbol]);
+      }
+    },
+    onError: (err) => {
+      console.error('frontend subscribe error home.js', err);
+    },
+  });
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -54,13 +48,14 @@ function HomePage() {
       <nav className="flex items-center justify-between p-4 bg-gray-800">
         <div className="flex items-center">
           <Link to="/" className="text-white font-bold text-xl">
-            Stock
+            Stock <i>live</i>
           </Link>
           <TextField
+            sx={{ input: { color: 'white' } }}
             variant="outlined"
             label="Search..."
             className="p-2 ml-4"
-            style={{ marginLeft: '65vw', width: '20vw', marginRight: '10px' }}
+            style={{ marginLeft: '60vw', width: '20vw', marginRight: '10px' }}
           />
         </div>
         <div>
@@ -70,7 +65,7 @@ function HomePage() {
         </div>
       </nav>
       <div className="flex flex-col items-center py-8">
-        <h1 className="text-2xl font-bold text-white">Stock Market Data</h1>
+        <h1 className="text-2xl font-bold text-white">REAL-TIME Stock Market Data</h1>
         <StockList stocks={stocks} />
       </div>
     </div>

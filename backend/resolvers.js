@@ -110,11 +110,29 @@ const resolvers = {
   },
   Subscription: {
     stockUpdate: {
-      subscribe: (_, { symbol }, { pubsub }) => {
-        console.log("Subscribing to stock updates");
+      subscribe: async (_, { symbol }) => {
+        console.log(`Subscribing to stock updates ${symbol}`);
+        const subscriber = new Redis();
+
+        // Subscribe to the stockUpdates channel using the subscriber instance
+        await subscriber.subscribe('stockUpdates');
+        subscriber.on('message', (channel, message) => {
+          console.log(`Received message from channel ${channel}: ${message}`);
+        });
   
         return pubsub.asyncIterator('stockUpdates');
       },
+      // resolve: (message) => {
+      //   console.log('Received message:', message);
+      //   // Parse the message if it's in string format (e.g., JSON)
+      //   const parsedMessage = JSON.parse(message);
+      //   return parsedMessage;
+      // },
+      // subscribe: () => {
+      //   console.log("Subscribing to stock update");
+  
+      //   return pubsub.asyncIterator('stockUpdates');
+      // },
     },
   },
   
