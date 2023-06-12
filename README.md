@@ -4,6 +4,7 @@ This is a stock application that provides real-time stock updates using Redis, E
 
 ## Features
 
+## - On multiple client instances if one client fetches query all clients recieve updated data and rerender content automatically.
 - Fetch stock data from an external API and display it in real-time.
 - Subscribe to real-time stock updates and receive updates without page reload.
 - Display stock data using interactive and visually appealing charts.
