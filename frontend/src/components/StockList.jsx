@@ -36,7 +36,7 @@ function StockList({ stocks }) {
             }}
           >
             <AspectRatio ratio="1" maxHeight={300} sx={{ minWidth: 182, flex: 1 }}>
-              <Graph id={stock.identifier}/>
+              <Graph stock={stock}/>
             </AspectRatio>
             <CardContent>
               <Typography fontSize="xl" fontWeight="lg">
