@@ -20,7 +20,8 @@ function HomePage() {
         console.log('Received stock update:', updatedStock);
 
         const updatedStocks = data.getAllStocks.map((stock) => {
-          if (stock.symbol === updatedStock.symbol) {
+          if (stock.identifier === updatedStock.identifier) {
+            console.log("yo");
             return updatedStock;
           }
           return stock;

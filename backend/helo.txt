@@ -105,3 +105,7 @@ const resolvers = {
 };
 
 module.exports = resolvers;
+
+
+PUBLISH stockUpdates "{\"stockUpdate\":{\"symbol\":\"NIFTY 50\",\"identifier\":\"NIFTY 50\",\"open\":1000.0,\"dayHigh\":1100.0,\"dayLow\":900.0,\"lastPrice\":1050.0,\"previousClose\":950.0,\"change\":100.0,\"pChange\":10.0,\"yearHigh\":1200.0,\"yearLow\":800.0,\"totalTradedVolume\":1000000,\"totalTradedValue\":1000000000.0,\"lastUpdateTime\":\"01-Jun-2023 10:00:00\",\"perChange365d\":20.0,\"perChange30d\":5.0},\"symbol\":\"NIFTY 50\"}"
+

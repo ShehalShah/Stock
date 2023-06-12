@@ -4,15 +4,15 @@ const { Redis } = require('ioredis');
 
 const API_KEY = '48334e4faemsh146b66580f9c961p13d654jsnfb3484c3b23a';
 
-// const publisher = new Redis();
-// const subscriber = new Redis();
+const publisher = new Redis();
+const subscriber = new Redis();
 
-// const pubsub = new RedisPubSub({
-//   publisher: publisher,
-//   subscriber: subscriber,
-// });
+const pubsub = new RedisPubSub({
+  publisher: publisher,
+  subscriber: subscriber,
+});
 
-const pubsub = new RedisPubSub()
+// const pubsub = new RedisPubSub()
 
 const resolvers = {
   Query: {
@@ -51,7 +51,11 @@ const resolvers = {
           perChange30d: stockData[0].perChange30d,
         };
         try {
-          const result = await pubsub.publish('stockUpdates', JSON.stringify(stock));
+          // const result = await pubsub.publish('stockUpdates', JSON.stringify(stock));
+          const result = await pubsub.publish('stockUpdates', {
+            stockUpdate: stock,
+            symbol: stock.symbol,
+          });
         } catch (error) {
           console.error('Failed to publish stock update:', error);
         }
@@ -98,7 +102,11 @@ const resolvers = {
 
         await Promise.all(
           stocks.map(async (stock) => {
-            await pubsub.publish('stockUpdates', JSON.stringify(stock));
+            // await pubsub.publish('stockUpdates', JSON.stringify(stock));
+            const result = await pubsub.publish('stockUpdates', {
+              stockUpdate: stock,
+              symbol: stock.identifier,
+            });
           })
         );
 
