@@ -4,13 +4,15 @@ const { Redis } = require('ioredis');
 
 const API_KEY = '48334e4faemsh146b66580f9c961p13d654jsnfb3484c3b23a';
 
-const publisher = new Redis();
-const subscriber = new Redis();
+// const publisher = new Redis();
+// const subscriber = new Redis();
 
-const pubsub = new RedisPubSub({
-  publisher: publisher,
-  subscriber: subscriber,
-});
+// const pubsub = new RedisPubSub({
+//   publisher: publisher,
+//   subscriber: subscriber,
+// });
+
+const pubsub = new RedisPubSub()
 
 const resolvers = {
   Query: {
@@ -48,7 +50,6 @@ const resolvers = {
           perChange365d: stockData[0].perChange365d,
           perChange30d: stockData[0].perChange30d,
         };
-        // Publish the stock update to the stockUpdates channel
         try {
           const result = await pubsub.publish('stockUpdates', JSON.stringify(stock));
         } catch (error) {
@@ -69,7 +70,7 @@ const resolvers = {
             'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com',
           },
           params: {
-            Indices: 'NIFTY 50', // Replace with the desired indices
+            Indices: 'NIFTY 50', 
           },
         };
 
@@ -95,7 +96,6 @@ const resolvers = {
           perChange30d: stockData.perChange30d,
         }));
 
-        // Publish the stock updates to the stockUpdates channel
         await Promise.all(
           stocks.map(async (stock) => {
             await pubsub.publish('stockUpdates', JSON.stringify(stock));
@@ -111,14 +111,14 @@ const resolvers = {
   Subscription: {
     stockUpdate: {
       subscribe: async (_, { symbol }) => {
-        console.log(`Subscribing to stock updates ${symbol}`);
-        const subscriber = new Redis();
+        // console.log(`Subscribing to stock updates ${symbol}`);
+        // const subscriber = new Redis();
 
-        // Subscribe to the stockUpdates channel using the subscriber instance
-        await subscriber.subscribe('stockUpdates');
-        subscriber.on('message', (channel, message) => {
-          console.log(`Received message from channel ${channel}: ${message}`);
-        });
+        // // Subscribe to the stockUpdates channel using the subscriber instance
+        // await subscriber.subscribe('stockUpdates');
+        // subscriber.on('message', (channel, message) => {
+        //   console.log(`Received message from channel ${channel}: ${message}`);
+        // });
   
         return pubsub.asyncIterator('stockUpdates');
       },

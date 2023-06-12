@@ -15,7 +15,7 @@ const app = express();
 app.use(cors());
 const httpServer = createServer(app);
 
-const redis = new Redis(); // Connect to Redis instance
+const redis = new Redis();
 
 const schema = makeExecutableSchema({
   typeDefs,
@@ -25,7 +25,6 @@ const schema = makeExecutableSchema({
 const server = new ApolloServer({
   schema,
   context: () => {
-    // Make the Redis client available in the context of resolvers
     return {
       redis,
     };
