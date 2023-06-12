@@ -1,15 +1,13 @@
 import React, { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useQuery, useSubscription } from '@apollo/client';
 import { Line } from 'react-chartjs-2';
-import { GET_STOCK } from '../queries';
+import { GET_STOCK, STOCK_UPDATE_SUBSCRIPTION } from '../queries';
 import Chart from 'chart.js/auto';
 import { Modal, Box, Button, Typography } from '@mui/material';
 import { useParams } from 'react-router-dom';
 
 const Stock = () => {
-  // const [symbol, setSymbol] = useState('NIFTY MIDCAP 50');
-  const { symbol }=useParams()
-  const [chartAttribute, setChartAttribute] = useState('lastPrice'); // Default chart attribute
+  const { symbol } = useParams();
   const [open, setOpen] = useState(false);
 
   const { data, loading, error } = useQuery(GET_STOCK, {
@@ -18,16 +16,20 @@ const Stock = () => {
     },
   });
 
+  const { data: stockUpdateData } = useSubscription(STOCK_UPDATE_SUBSCRIPTION, {
+    variables: { symbol },
+  });
+
   if (loading) {
     return <div>Loading...</div>;
   } else if (error) {
     return <div>Error fetching stock data: {error.message}</div>;
   } else {
-    const stock = data.getStock;
+    const stock = stockUpdateData ? stockUpdateData.stockUpdate : data.getStock;
 
     // Prepare chart data
     const chartData = {
-      labels: ['Year Low','Open',  'Day Low','Day High', 'Last Price', 'Previous Close', 'Year High'],
+      labels: ['Year Low', 'Open', 'Day Low', 'Day High', 'Last Price', 'Previous Close', 'Year High'],
       datasets: [
         {
           label: 'Stock Attribute',
@@ -41,7 +43,7 @@ const Stock = () => {
             stock.yearHigh,
           ],
           backgroundColor: 'rgba(15, 185, 177, 0.2)', // Fluorescent Green background color
-          borderColor: 'rgba(100, 250, 200, 1)', 
+          borderColor: 'rgba(100, 250, 200, 1)',
           fill: {
             target: 'origin', // Set the fill options
             above: 'rgba(15, 185, 177, 0.2)',
