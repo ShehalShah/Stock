@@ -8,11 +8,27 @@ const Redis = require('ioredis');
 const { typeDefs } = require('./graphschema');
 const resolvers = require('./resolvers');
 const { WebSocketServer } = require('ws');
-const { useServer}=require('graphql-ws/lib/use/ws');
+const { useServer } = require('graphql-ws/lib/use/ws');
 const cors = require('cors');
+const mongoose = require('mongoose');
+const routes = require('./Routes/user');
 
 const app = express();
 app.use(cors());
+app.use(express.json());
+
+// Connect to MongoDB
+mongoose.connect('mongodb+srv://shehalshah264:WhIGgh4NEfqLteSc@cluster0.wnug1ft.mongodb.net/?retryWrites=true&w=majority', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((error) => {
+    console.error('Error connecting to MongoDB:', error);
+  });
+
 const httpServer = createServer(app);
 
 const redis = new Redis();
@@ -30,6 +46,8 @@ const server = new ApolloServer({
     };
   },
 });
+
+app.use('/', routes); // Add the routes middleware
 
 async function startServer() {
   await server.start();
@@ -50,7 +68,7 @@ async function startServer() {
 
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: "/subscriptions",
+    path: '/subscriptions',
   });
 
   const serverCleanup = useServer({ schema }, wsServer);
