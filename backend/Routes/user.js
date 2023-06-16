@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/User');
 
-
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -74,6 +73,27 @@ router.post('/watchlist', async (req, res) => {
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'watchlist server eror' });
+    }
+  });
+
+  router.post('/user', async (req, res) => {
+    try {
+      const { token } = req.body;
+  
+      const decodedToken = jwt.verify(token, 'your_jwt_secret');
+      const userId = decodedToken.userId;
+  
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const { password, ...userData } = user._doc;
+  
+      res.status(200).json(userData);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Server error' });
     }
   });
   

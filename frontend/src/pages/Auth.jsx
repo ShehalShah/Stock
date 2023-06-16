@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { TextField, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ switchForm }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -19,7 +21,8 @@ const LoginForm = ({ switchForm }) => {
     try {
       const response = await axios.post('http://localhost:4000/login', { email, password });
       const { token } = response.data;
-      console.log(token);
+      localStorage.setItem('token', token);
+      navigate('/');
     } catch (error) {
       console.error(error);
     }
@@ -89,7 +92,8 @@ const SignupForm = ({ switchForm }) => {
     try {
       const response = await axios.post('http://localhost:4000/register', { name, email, password });
       const { token } = response.data;
-      console.log(token);
+      localStorage.setItem('token', token);
+      navigate('/');
     } catch (error) {
       console.error(error);
     }

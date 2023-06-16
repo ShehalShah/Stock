@@ -9,7 +9,29 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Typography from '@mui/joy/Typography';
 import Sheet from '@mui/joy/Sheet';
+import axios from 'axios';
 function StockList({ stocks }) {
+
+  const addToWatchlist = async (itemId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const config = {
+        headers: {
+          Authorization: token,
+        },
+      };
+
+      const data = { itemId };
+
+      const response = await axios.post('http://localhost:4000/watchlist', data, config);
+      console.log(response.data);
+
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const nav=useNavigate()
   return (
     <>
@@ -85,7 +107,7 @@ function StockList({ stocks }) {
                 </div>
               </Sheet>
               <Box sx={{ display: 'flex', gap: 1.5, '& > button': { flex: 1 } }}>
-                <Button variant="outlined" color="neutral">
+                <Button variant="outlined" color="neutral" onClick={() => addToWatchlist(stock.identifier)}>
                   Add to Watchlist
                 </Button>
                 <Button variant="solid" color="primary" onClick={()=>nav(`/stock/${stock.identifier}`)}>

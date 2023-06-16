@@ -1,14 +1,36 @@
-import React, { useEffect } from 'react';
+import React, { useEffect,useState } from 'react';
 import { useQuery, useApolloClient, useSubscription } from '@apollo/client';
 import { GET_ALL_STOCKS, STOCK_UPDATE_SUBSCRIPTION } from '../queries';
 import StockList from '../components/StockList';
-import { Link } from 'react-router-dom';
 import { TextField, Button } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function HomePage() {
   const { loading, error, data } = useQuery(GET_ALL_STOCKS);
   const symbol = "hello";
   const client = useApolloClient();
+  const nav=useNavigate()
+  const token=localStorage.getItem("token")
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUserDetails = async () => {
+      try {
+        const response = await axios.post(
+          'http://localhost:4000/user',
+          { token }
+        );
+        setUser(response.data);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+
+    if (token) {
+      fetchUserDetails();
+    }
+  }, [token]);
 
   const { data: stockUpdateData } = useSubscription(STOCK_UPDATE_SUBSCRIPTION, {
     variables: { symbol },
@@ -58,9 +80,14 @@ function HomePage() {
           />
         </div>
         <div>
-          <Button variant="contained" color="primary" size="small">
-            Login/Signup
+          {token? <div className='flex'><Button variant="contained" color="success" size="medium" onClick={()=>nav("/portfolio")}>
+          {user?.name}
           </Button>
+          <Button variant="contained" color="primary" size="medium" onClick={()=>{localStorage.removeItem("token");nav("/auth");}}>
+          Logout
+        </Button></div>: <Button variant="contained" color="primary" size="medium" onClick={()=>nav("/auth")}>
+            Login/Signup
+          </Button>}
         </div>
       </nav>
       <div className="flex flex-col items-center py-8">
