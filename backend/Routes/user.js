@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../Models/User');
 
+
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -23,7 +24,9 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    res.status(201).json({ message: 'User registered successfully' });
+    const token = jwt.sign({ userId: user._id }, 'your_jwt_secret');
+
+    res.status(201).json({ token, message: 'User registered successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });
@@ -56,7 +59,9 @@ router.post('/login', async (req, res) => {
 router.post('/watchlist', async (req, res) => {
     try {
       const { itemId } = req.body;
-      const userId = req.user.userId; 
+      const token = req.headers.authorization; 
+      const decodedToken = jwt.verify(token, 'your_jwt_secret');
+      const userId = decodedToken.userId;
       
       const user = await User.findById(userId);
       if (!user) {
@@ -68,7 +73,7 @@ router.post('/watchlist', async (req, res) => {
       res.status(200).json({ message: 'Item added to watchlist' });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Server error' });
+      res.status(500).json({ error: 'watchlist server eror' });
     }
   });
   

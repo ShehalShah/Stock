@@ -9,6 +9,7 @@ import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { SubscriptionClient } from "subscriptions-transport-ws";
 import App from './App';
+import "./input.css"
 //import  {typeDefs} from "../../backend/graphschema"
 
 // const wsLink = new WebSocketLink({

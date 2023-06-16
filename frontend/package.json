@@ -17,6 +17,7 @@
     "@mui/material": "^5.13.4",
     "@mui/system": "^5.13.2",
     "apollo-client": "^2.6.10",
+    "axios": "^1.4.0",
     "graphql-ws": "^5.13.1",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",

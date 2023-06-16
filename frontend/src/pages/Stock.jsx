@@ -27,7 +27,6 @@ const Stock = () => {
   } else {
     const stock = stockUpdateData ? stockUpdateData.stockUpdate : data.getStock;
 
-    // Prepare chart data
     const chartData = {
       labels: ['Year Low', 'Open', 'Day Low', 'Day High', 'Last Price', 'Previous Close', 'Year High'],
       datasets: [
@@ -42,17 +41,16 @@ const Stock = () => {
             stock.previousClose,
             stock.yearHigh,
           ],
-          backgroundColor: 'rgba(15, 185, 177, 0.2)', // Fluorescent Green background color
+          backgroundColor: 'rgba(15, 185, 177, 0.2)', 
           borderColor: 'rgba(100, 250, 200, 1)',
           fill: {
-            target: 'origin', // Set the fill options
+            target: 'origin',
             above: 'rgba(15, 185, 177, 0.2)',
           },
         },
       ],
     };
 
-    // Chart options
     const chartOptions = {
       scales: {
         y: {
@@ -61,7 +59,7 @@ const Stock = () => {
       },
       plugins: {
         legend: {
-          display: true, // Hide legend
+          display: true,
         },
       },
     };

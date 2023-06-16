@@ -10,7 +10,6 @@ function HomePage() {
   const symbol = "hello";
   const client = useApolloClient();
 
-  // Subscribe to stock updates using useSubscription
   const { data: stockUpdateData } = useSubscription(STOCK_UPDATE_SUBSCRIPTION, {
     variables: { symbol },
     onSubscriptionData: ({ subscriptionData }) => {
@@ -21,7 +20,6 @@ function HomePage() {
 
         const updatedStocks = data.getAllStocks.map((stock) => {
           if (stock.identifier === updatedStock.identifier) {
-            console.log("yo");
             return updatedStock;
           }
           return stock;
