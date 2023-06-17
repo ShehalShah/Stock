@@ -47,7 +47,7 @@ const server = new ApolloServer({
   },
 });
 
-app.use('/', routes); // Add the routes middleware
+app.use('/', routes); 
 
 async function startServer() {
   await server.start();
