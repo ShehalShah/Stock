@@ -23,3 +23,5 @@ This is a stock application that provides real-time stock updates using Redis, E
 ![alt text](https://i.postimg.cc/2yB59Mqf/Screenshot-2023-06-09-at-2-12-24-AM.png)
 ![alt text](https://i.postimg.cc/0Q4QfPyf/Screenshot-2023-06-09-at-2-12-59-AM.png)
 ![alt text](https://i.postimg.cc/5tnjXwcD/Screenshot-2023-06-09-at-2-13-07-AM.png)
+![alt text](https://i.ibb.co/9c42Dg9/Screenshot-2023-06-17-at-6-55-04-PM.png)
+
