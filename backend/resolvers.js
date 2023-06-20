@@ -18,10 +18,10 @@ const resolvers = {
       try {
         const cachedStock = await redis.get(`stock:${symbol}`);
         if (cachedStock) {
-          console.log("cached data retrieved stcokkk");
+          console.log("returning cached stock");
           return JSON.parse(cachedStock);
         }
-
+        console.log("fetching");
         const options = {
           method: 'GET',
           url: 'https://latest-stock-price.p.rapidapi.com/any',
@@ -59,6 +59,7 @@ const resolvers = {
         await redis.set(`stock:${symbol}`, JSON.stringify(stock));
 
         try {
+          console.log("publishing");
           const result = await pubsub.publish('stockUpdates', {
             stockUpdate: stock,
             symbol: stock.symbol,
@@ -76,7 +77,6 @@ const resolvers = {
       try {
         const cachedStocks = await redis.get('stocks');
         if (cachedStocks) {
-          console.log("cached data retrieved");
           return JSON.parse(cachedStocks);
         }
 

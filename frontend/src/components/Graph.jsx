@@ -50,7 +50,7 @@ const Graph = ({stock}) => {
       },
       plugins: {
         legend: {
-          display: false, // Hide legend
+          display: false,
         },
       },
     };

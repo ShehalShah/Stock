@@ -19,13 +19,16 @@ const Stock = () => {
   const { data: stockUpdateData } = useSubscription(STOCK_UPDATE_SUBSCRIPTION, {
     variables: { symbol },
   });
+  console.log(data);
 
   if (loading) {
     return <div>Loading...</div>;
   } else if (error) {
     return <div>Error fetching stock data: {error.message}</div>;
   } else {
-    const stock = stockUpdateData ? stockUpdateData.stockUpdate : data.getStock;
+
+    console.log(stockUpdateData);
+    const stock = stockUpdateData && stockUpdateData.stockUpdate.identifier===symbol ? stockUpdateData.stockUpdate : data.getStock;
 
     const chartData = {
       labels: ['Year Low', 'Open', 'Day Low', 'Day High', 'Last Price', 'Previous Close', 'Year High'],
