@@ -4,6 +4,7 @@ import { Box, Typography } from '@mui/material';
 import { Avatar, Card, CardContent } from '@mui/material';
 import { TextField, Button } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
+import Watch from '../components/WatchlistStock';
 
 function Portfolio() {
   const [user, setUser] = useState(null);
@@ -85,22 +86,14 @@ function Portfolio() {
           </Card>
         )}
         {watchlist.length > 0 ? (
-          <div className="flex flex-col items-center">
-            <Typography variant="h5" className="mb-4">
+          <>
+            <Typography variant="h4" className="mb-4" style={{ color: 'white',fontFamily: 'Roboto'  }}>
               Watchlist
             </Typography>
-            <Box sx={{ width: '85%' }}>
-              {/* Display watchlist stocks */}
-              {watchlist.map((stock) => (
-                <div key={stock.identifier} className="bg-white rounded-md p-4 mb-4 w-full">
-                  {/* Display individual stock details */}
-                  <Typography variant="h6">{stock.symbol}</Typography>
-                  <Typography>{stock.identifier}</Typography>
-                  {/* Add more details as needed */}
-                </div>
+            {watchlist.map((stock) => (
+                <Watch stockid={stock} />
               ))}
-            </Box>
-          </div>
+          </>
         ) : (
           <Typography variant="h5" className="mt-4">
             No stocks in watchlist

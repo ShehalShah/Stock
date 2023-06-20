@@ -12,12 +12,16 @@ const pubsub = new RedisPubSub({
   subscriber: subscriber,
 });
 
-// const pubsub = new RedisPubSub()
-
 const resolvers = {
   Query: {
     getStock: async (_, { symbol }, { redis }) => {
       try {
+        const cachedStock = await redis.get(`stock:${symbol}`);
+        if (cachedStock) {
+          console.log("cached data retrieved stcokkk");
+          return JSON.parse(cachedStock);
+        }
+
         const options = {
           method: 'GET',
           url: 'https://latest-stock-price.p.rapidapi.com/any',
@@ -50,8 +54,11 @@ const resolvers = {
           perChange365d: stockData[0].perChange365d,
           perChange30d: stockData[0].perChange30d,
         };
+
+        // Cache the stock data in Redis
+        await redis.set(`stock:${symbol}`, JSON.stringify(stock));
+
         try {
-          // const result = await pubsub.publish('stockUpdates', JSON.stringify(stock));
           const result = await pubsub.publish('stockUpdates', {
             stockUpdate: stock,
             symbol: stock.symbol,
@@ -59,6 +66,7 @@ const resolvers = {
         } catch (error) {
           console.error('Failed to publish stock update:', error);
         }
+
         return stock;
       } catch (error) {
         throw new Error('Failed to fetch stock data');
@@ -66,6 +74,12 @@ const resolvers = {
     },
     getAllStocks: async (_, __, { redis }) => {
       try {
+        const cachedStocks = await redis.get('stocks');
+        if (cachedStocks) {
+          console.log("cached data retrieved");
+          return JSON.parse(cachedStocks);
+        }
+
         const options = {
           method: 'GET',
           url: 'https://latest-stock-price.p.rapidapi.com/price',
@@ -74,7 +88,7 @@ const resolvers = {
             'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com',
           },
           params: {
-            Indices: 'NIFTY 50', 
+            Indices: 'NIFTY 50',
           },
         };
 
@@ -100,9 +114,11 @@ const resolvers = {
           perChange30d: stockData.perChange30d,
         }));
 
+        // Cache the stocks data in Redis
+        await redis.set('stocks', JSON.stringify(stocks));
+
         await Promise.all(
           stocks.map(async (stock) => {
-            // await pubsub.publish('stockUpdates', JSON.stringify(stock));
             const result = await pubsub.publish('stockUpdates', {
               stockUpdate: stock,
               symbol: stock.identifier,
@@ -119,31 +135,10 @@ const resolvers = {
   Subscription: {
     stockUpdate: {
       subscribe: async (_, { symbol }) => {
-        // console.log(`Subscribing to stock updates ${symbol}`);
-        // const subscriber = new Redis();
-
-        // // Subscribe to the stockUpdates channel using the subscriber instance
-        // await subscriber.subscribe('stockUpdates');
-        // subscriber.on('message', (channel, message) => {
-        //   console.log(`Received message from channel ${channel}: ${message}`);
-        // });
-  
         return pubsub.asyncIterator('stockUpdates');
       },
-      // resolve: (message) => {
-      //   console.log('Received message:', message);
-      //   // Parse the message if it's in string format (e.g., JSON)
-      //   const parsedMessage = JSON.parse(message);
-      //   return parsedMessage;
-      // },
-      // subscribe: () => {
-      //   console.log("Subscribing to stock update");
-  
-      //   return pubsub.asyncIterator('stockUpdates');
-      // },
     },
   },
-  
 };
 
 module.exports = resolvers;

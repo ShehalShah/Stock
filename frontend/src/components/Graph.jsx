@@ -19,7 +19,7 @@ const Graph = ({stock}) => {
   // } else if (error) {
   //   return <div>Error fetching stock data: {error.message}</div>;
   // } else {
-    // const stock = data.getStock;
+  //   const stock = data.getStock;
 
     const backgroundColor = stock.pChange < 0 ? 'rgba(255, 0, 0, 0.2)' : 'rgba(15, 185, 177, 0.2)';
     const borderColor = stock.pChange < 0 ? 'rgba(255, 0, 0, 0.4)' : 'rgba(100, 250, 200, 1)';
