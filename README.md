@@ -8,7 +8,7 @@ This is a stock application that provides real-time stock updates and personal w
 - Fetch stock data from an external API and display it in real-time.
 - Subscribe to real-time stock updates and receive updates without page reload.
 - Display stock data using interactive and visually appealing charts.
-- Implemented using Redis for pub/sub functionality, Express for server-side logic, WebSockets for real-time communication, GraphQL for API queries, React for building the frontend, Tailwind CSS for styling, and React Charts for visualizing data.
+- Implemented using Redis for pub/sub functionality,caching, Express for server-side logic, WebSockets for real-time communication, GraphQL for API queries, React for building the frontend, Tailwind CSS for styling, and React Charts for visualizing data.
 - Allows user auth using JWT tokens.
 - Stocks can be added to watchlist
 
